@@ -15,6 +15,7 @@
   {{ 'component-slider.css' | asset_url | stylesheet_tag }}
   {{ 'component-rating.css' | asset_url | stylesheet_tag }}
   {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
+  {{ 'collapsible.css' | asset_url | stylesheet_tag }}
 
   {% unless product.has_only_default_variant %}
     {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
@@ -39,6 +40,7 @@
     }
   {%- endstyle -%}
 
+  <script src="{{ 'collapsible.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
   {%- if product.quantity_price_breaks_configured? -%}
@@ -196,6 +198,36 @@
                   <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
                     {{ product.description }}
                   </div>
+                {%- endif -%}
+              {%- when 'product_info' -%}
+                {%- assign parts = block.settings.metafield | strip | split: '.' -%}
+                {%- assign ns = parts | first -%}
+                {%- assign key = parts | last -%}
+                {%- assign mf = product.metafields[ns][key] -%}
+
+                {%- if mf != blank -%}
+                  <details
+                    class="pdp-accordion__item"
+                    data-accordion-block
+                    {% if forloop.first %}
+                      open
+                    {% endif %}
+                  >
+                    <summary
+                      class="pdp-accordion__summary h4"
+                      role="button"
+                      aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                    >
+                      {{ block.settings.label }}
+                    </summary>
+                    <div class="pdp-accordion__content rte">
+                      {%- if mf.type == 'rich_text' -%}
+                        {{ mf | metafield_tag }}
+                      {%- else -%}
+                        {{ mf.value | newline_to_br }}
+                      {%- endif -%}
+                    </div>
+                  </details>
                 {%- endif -%}
               {%- when 'sku' -%}
                 <p
@@ -932,6 +964,14 @@
       "type": "description",
       "name": "t:sections.main-product.blocks.description.name",
       "limit": 1
+    },
+    {
+      "type": "product_info",
+      "name": "Product Info",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Extra Information" },
+        { "type": "text", "id": "metafield", "label": "Metafield (namespace.key)", "default": "additional.info" }
+      ]
     },
     {
       "type": "share",

@@ -45,6 +45,20 @@
             "show_gift_card_recipient": true
           }
         },
+        "product_info_wD9KjG": {
+          "type": "product_info",
+          "settings": {
+            "label": "Extra Information",
+            "metafield": "additional.info"
+          }
+        },
+        "product_info_xX3cx3": {
+          "type": "product_info",
+          "settings": {
+            "label": "Extra Information",
+            "metafield": "additional.info"
+          }
+        },
         "description": {
           "type": "description",
           "settings": {}
@@ -63,6 +77,8 @@
         "variant_picker",
         "quantity_selector",
         "buy_buttons",
+        "product_info_wD9KjG",
+        "product_info_xX3cx3",
         "description",
         "share"
       ],
