@@ -193,38 +193,55 @@
                     {%- endif -%}
                   {%- endif -%}
                 </p>
-              {%- when 'description' -%}
-                {%- if product.description != blank -%}
-                  <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
+              {%- when 'product_info' -%}
+                {%- comment -%} Row 1: Product Description (always present, open by default) {%- endcomment -%}
+                <details class="pdp-accordion__item" data-accordion-block open>
+                  <summary class="pdp-accordion__summary h4" role="button" aria-expanded="true">
+                    {{ 'products.product.description' | t }}
+                    <svg class="icon-caret" viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M9 1L5 5 1 1" stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd"/>
+                    </svg>
+                  </summary>
+                  <div class="pdp-accordion__content rte">
                     {{ product.description }}
                   </div>
-                {%- endif -%}
-              {%- when 'product_info' -%}
-                {%- assign parts = block.settings.metafield | strip | split: '.' -%}
-                {%- assign ns = parts | first -%}
-                {%- assign key = parts | last -%}
-                {%- assign mf = product.metafields[ns][key] -%}
+                </details>
 
-                {%- if mf != blank -%}
-                  <details
-                    class="pdp-accordion__item"
-                    data-accordion-block
-                    {% if forloop.first %}
-                      open
-                    {% endif %}
-                  >
-                    <summary
-                      class="pdp-accordion__summary h4"
-                      role="button"
-                      aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
-                    >
-                      {{ block.settings.label }}
+                {%- comment -%} Row 2: Additional Information metafield {%- endcomment -%}
+                {%- assign mf_additional = product.metafields.custom.additional_info -%}
+                {%- if mf_additional != blank -%}
+                  <details class="pdp-accordion__item" data-accordion-block>
+                    <summary class="pdp-accordion__summary h4" role="button" aria-expanded="false">
+                      {{ block.settings.additional_label }}
+                      <svg class="icon-caret" viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M9 1L5 5 1 1" stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd"/>
+                      </svg>
                     </summary>
                     <div class="pdp-accordion__content rte">
-                      {%- if mf.type == 'rich_text' -%}
-                        {{ mf | metafield_tag }}
+                      {%- if mf_additional.type == 'rich_text' -%}
+                        {{ mf_additional | metafield_tag }}
                       {%- else -%}
-                        {{ mf.value | newline_to_br }}
+                        {{ mf_additional.value | newline_to_br }}
+                      {%- endif -%}
+                    </div>
+                  </details>
+                {%- endif -%}
+
+                {%- comment -%} Row 3: Shipping Details metafield {%- endcomment -%}
+                {%- assign mf_shipping = product.metafields.custom.shipping_details -%}
+                {%- if mf_shipping != blank -%}
+                  <details class="pdp-accordion__item" data-accordion-block>
+                    <summary class="pdp-accordion__summary h4" role="button" aria-expanded="false">
+                      {{ block.settings.shipping_label }}
+                      <svg class="icon-caret" viewBox="0 0 10 6" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M9 1L5 5 1 1" stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd"/>
+                      </svg>
+                    </summary>
+                    <div class="pdp-accordion__content rte">
+                      {%- if mf_shipping.type == 'rich_text' -%}
+                        {{ mf_shipping | metafield_tag }}
+                      {%- else -%}
+                        {{ mf_shipping.value | newline_to_br }}
                       {%- endif -%}
                     </div>
                   </details>
@@ -961,16 +978,22 @@
       ]
     },
     {
-      "type": "description",
-      "name": "t:sections.main-product.blocks.description.name",
-      "limit": 1
-    },
-    {
       "type": "product_info",
       "name": "Product Info",
+      "limit": 1,
       "settings": [
-        { "type": "text", "id": "label", "label": "Label", "default": "Extra Information" },
-        { "type": "text", "id": "metafield", "label": "Metafield (namespace.key)", "default": "additional.info" }
+        {
+          "type": "text",
+          "id": "additional_label",
+          "label": "Additional Information Label",
+          "default": "Additional Info"
+        },
+        {
+          "type": "text",
+          "id": "shipping_label",
+          "label": "Shipping Details Label",
+          "default": "Shipping Details"
+        }
       ]
     },
     {
