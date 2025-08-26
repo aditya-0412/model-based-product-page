@@ -16,6 +16,7 @@
   {{ 'component-rating.css' | asset_url | stylesheet_tag }}
   {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
   {{ 'collapsible.css' | asset_url | stylesheet_tag }}
+  {{ 'product-info-tabs.css' | asset_url | stylesheet_tag }}
 
   {% unless product.has_only_default_variant %}
     {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
@@ -43,6 +44,7 @@
   <script src="{{ 'collapsible.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'product-info-tabs.js' | asset_url }}" defer="defer"></script>
   {%- if product.quantity_price_breaks_configured? -%}
     <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
@@ -193,6 +195,7 @@
                     {%- endif -%}
                   {%- endif -%}
                 </p>
+                {% comment %} Custom Code: Collapsible Layout {% endcomment %}
               {%- when 'product_info' -%}
                 {%- comment -%} Row 1: Product Description (always present, open by default) {%- endcomment -%}
                 <details class="pdp-accordion__item" data-accordion-block open>
@@ -246,6 +249,83 @@
                     </div>
                   </details>
                 {%- endif -%}
+                {% comment %} Custom Code: Tabs Layout {% endcomment %}
+              {%- when 'product_info_tabs' -%}
+                {%- assign mf_additional = product.metafields.custom.additional_info -%}
+                {%- assign mf_shipping = product.metafields.custom.shipping_details -%}
+
+                <div class="pdp-tabs" data-tabs>
+                  <!-- Tab Headers -->
+                  <ul class="pdp-tabs__nav" role="tablist">
+                    <li>
+                      <button
+                        class="pdp-tabs__button is-active"
+                        role="tab"
+                        aria-selected="true"
+                        aria-controls="tab-description"
+                      >
+                        {{ 'products.product.description' | t }}
+                      </button>
+                    </li>
+
+                    {%- if mf_additional != blank -%}
+                      <li>
+                        <button
+                          class="pdp-tabs__button"
+                          role="tab"
+                          aria-selected="false"
+                          aria-controls="tab-additional"
+                        >
+                          {{ block.settings.additional_label | default: 'Additional Information' }}
+                        </button>
+                      </li>
+                    {%- endif -%}
+
+                    {%- if mf_shipping != blank -%}
+                      <li>
+                        <button
+                          class="pdp-tabs__button"
+                          role="tab"
+                          aria-selected="false"
+                          aria-controls="tab-shipping"
+                        >
+                          {{ block.settings.shipping_label | default: 'Shipping Details' }}
+                        </button>
+                      </li>
+                    {%- endif -%}
+                  </ul>
+
+                  <!-- Tab Panels -->
+                  <div class="pdp-tabs__content">
+                    <div id="tab-description" class="pdp-tabs__panel is-active" role="tabpanel">
+                      <div class="rte">{{ product.description }}</div>
+                    </div>
+
+                    {%- if mf_additional != blank -%}
+                      <div id="tab-additional" class="pdp-tabs__panel" role="tabpanel" hidden>
+                        <div class="rte">
+                          {%- if mf_additional.type == 'rich_text' -%}
+                            {{ mf_additional | metafield_tag }}
+                          {%- else -%}
+                            {{ mf_additional.value | newline_to_br }}
+                          {%- endif -%}
+                        </div>
+                      </div>
+                    {%- endif -%}
+
+                    {%- if mf_shipping != blank -%}
+                      <div id="tab-shipping" class="pdp-tabs__panel" role="tabpanel" hidden>
+                        <div class="rte">
+                          {%- if mf_shipping.type == 'rich_text' -%}
+                            {{ mf_shipping | metafield_tag }}
+                          {%- else -%}
+                            {{ mf_shipping.value | newline_to_br }}
+                          {%- endif -%}
+                        </div>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                </div>
               {%- when 'sku' -%}
                 <p
                   class="product__sku{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
@@ -992,6 +1072,24 @@
           "type": "text",
           "id": "shipping_label",
           "label": "Shipping Details Label",
+          "default": "Shipping Details"
+        }
+      ]
+    },
+    {
+      "type": "product_info_tabs",
+      "name": "Product Info (Tabs)",
+      "settings": [
+        {
+          "type": "text",
+          "id": "additional_label",
+          "label": "Additional Info Tab Label",
+          "default": "Additional Information"
+        },
+        {
+          "type": "text",
+          "id": "shipping_label",
+          "label": "Shipping Details Tab Label",
           "default": "Shipping Details"
         }
       ]
