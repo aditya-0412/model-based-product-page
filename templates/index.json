@@ -15,8 +15,15 @@
         "heading": {
           "type": "heading",
           "settings": {
-            "heading": "Browse our latest products",
+            "heading": "<strong>Uncover This Season’s Finest</strong>",
             "heading_size": "h0"
+          }
+        },
+        "text_a3kxnU": {
+          "type": "text",
+          "settings": {
+            "text": "WHERE REFINED CRAFTSMANSHIP AND CONTEMPORARY ALLURE UNITE",
+            "text_style": "body"
           }
         },
         "button": {
@@ -33,11 +40,12 @@
       },
       "block_order": [
         "heading",
+        "text_a3kxnU",
         "button"
       ],
       "settings": {
         "image": "shopify://shop_images/generate-hero-banner-image-for-branded-clothing-store-that-contains-some-models-and-should-not-contain-ant-text-on-the-image-ensure-that-image-is-of-high-quality-and-all-models-skin-t_da883039-e18f-46a4-9be2-f3904ace1a6c.png",
-        "image_overlay_opacity": 40,
+        "image_overlay_opacity": 50,
         "image_height": "adapt",
         "image_behavior": "none",
         "desktop_content_position": "middle-center",
