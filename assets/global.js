@@ -1241,10 +1241,31 @@ class VariantSelects extends HTMLElement {
     super();
   }
 
+    // Custom Code Start: Getting Current Variant images for selected variant
+  getCurrentVariant(target) {
+    const currentImgAlt = target?.value?.toLowerCase();
+    const thumbnails = document.querySelectorAll("[thumbnail-alt]");
+
+    let matchFound = false;
+
+    thumbnails.forEach((img) => {
+      const alt = img.getAttribute("thumbnail-alt")?.toLowerCase();
+      const isMatch = currentImgAlt && alt === currentImgAlt;
+      img.style.display = isMatch ? "block" : "none";
+      if (isMatch) matchFound = true;
+    });
+
+    if (!matchFound) {
+      thumbnails.forEach((img) => (img.style.display = "block"));
+    }
+  }
+  // Custom Code End: Getting Current Variant images for selected variant
+
   connectedCallback() {
     this.addEventListener("change", (event) => {
       const target = this.getInputForEventTarget(event.target);
       this.updateSelectionMetadata(event);
+      this.getCurrentVariant(target); // Custom Code: function called
 
       publish(PUB_SUB_EVENTS.optionValueSelectionChange, {
         data: {
